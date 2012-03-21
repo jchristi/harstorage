@@ -1,5 +1,6 @@
 import sys
 sys.path.append(sys.path[0] + "/harstorage/lib/pcap2har")
+sys.path.append(sys.path[0] + "/harstorage/lib")
 
 import pcap
 import pcaputil
