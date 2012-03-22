@@ -2,6 +2,8 @@ import json
 import time
 import re
 
+from harstorage.lib.PCAP import PCAP
+
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 
 class Bytes(float):
@@ -127,7 +129,7 @@ class HAR():
     HAR Parser
     """
 
-    def __init__(self, har, fixed=False):
+    def __init__(self, har, fixed=False, filename=None):
         """Deserialize HAR file and initialize variables"""
 
         # Check file size. If size is null it breaks parsing and return
@@ -154,8 +156,26 @@ class HAR():
 
                 self.parsing_status = "Successful"
 
-            except Exception as error:
-                self.parsing_status = ": ".join([type(error).__name__, error.message])
+            except:
+                try:
+                    pcap_handler = PCAP()
+                    pcap_handler.store_pcap(har)
+                    pcap_handler.generate_har()
+                    har = pcap_handler.get_har()
+
+                    # Deserialize HAR file, fix issues related to Page Speed and
+                    # store original file for HAR Viewer
+                    self.har = json.loads(har)
+                    self.har = Fixer.fix_pagespeed(self.har)
+                    self.origin = har
+
+                    # Initial varaibles and counters
+                    self.init_variables()
+                    self.label = filename
+
+                    self.parsing_status = "Successful"
+                except Exception as error:
+                    self.parsing_status = ": ".join([type(error).__name__, error.message])
 
     def init_variables(self):
         self.full_load_time = 0
@@ -175,6 +195,8 @@ class HAR():
         self.bad_requests = 0
 
         self.domains = dict()
+
+        self.label = None
 
     def analyze(self):
         """Extract data from HAR container"""
@@ -222,7 +244,8 @@ class HAR():
             self.update_domain_info()
 
         # Label
-        self.label = self.get_label()
+        if not self.label:
+            self.label = self.get_label()
 
         # URL
         self.url = self.get_url()

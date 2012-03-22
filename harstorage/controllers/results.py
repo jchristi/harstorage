@@ -330,10 +330,13 @@ class ResultsController(BaseController):
 
         # HAR initialization
         try:
-            har = HAR(request.POST["file"].value)
+            filename = request.POST["file"].filename.split(".")[0]
+            filecontent = request.POST["file"].value
+            har = HAR(filecontent, filename=filename)
         except:
-            har = HAR(request.POST["file"])
-        
+            filecontent = request.POST["file"]
+            har = HAR(filecontent)
+
         # Analysis of uploaded data
         if har.parsing_status == "Successful":
             # Parsing imported HAR file
