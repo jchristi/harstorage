@@ -24,7 +24,7 @@ class MigrationController(BaseController):
         for document in mdb_handler.collection.find(fields=["_id", "har"]):
             id = document["_id"]
 
-            har = HAR(document["har"], True)
+            har = HAR(document["har"], fixed=True)
 
             har.analyze()
 
