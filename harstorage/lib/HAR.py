@@ -109,7 +109,7 @@ class Fixer():
             milliseconds, dash, timezone = seconds.partition("-")
 
             entry["startedDateTime"] = long_time + dot + milliseconds + "+00:00"
-
+            entry["response"]["content"]["text"] = ""
         # Page level
         for page in har["log"]["pages"]:
             if page["startedDateTime"].rfind("+") != -1:
