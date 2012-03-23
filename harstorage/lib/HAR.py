@@ -107,6 +107,7 @@ class Fixer():
 
             long_time, dot, seconds = entry["startedDateTime"].partition(".")
             milliseconds, dash, timezone = seconds.partition("-")
+            milliseconds = milliseconds.replace("Z", "")
 
             entry["startedDateTime"] = long_time + dot + milliseconds + "+00:00"
             entry["response"]["content"]["text"] = ""
@@ -118,6 +119,7 @@ class Fixer():
 
             long_time, dot, seconds = page["startedDateTime"].partition(".")
             milliseconds, dash, timezone = seconds.partition("-")
+            milliseconds = milliseconds.replace("Z", "")
 
             page["startedDateTime"] = long_time + dot + milliseconds + "+00:00"
 
